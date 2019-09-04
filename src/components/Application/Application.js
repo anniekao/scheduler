@@ -27,12 +27,35 @@ export default function Application() {
       [id]: appointment
     };
 
-    console.log(appointments);
     // update appointments with the new appointment
     axios
       .put(`http://localhost:8001/api/appointments/${id}`, appointment)
       .then(setState({...state, appointments}))
       .catch(err => console.error(err));    
+  };
+
+  const cancelInterview = (id) => {
+    const appointment = {
+      ...state.appointments[id],
+      interview: null
+    };
+    console.log('id: ', id);
+    console.log('appointment:', appointment);
+    const appointments = {
+      ...state.appointments, 
+      [id]: appointment
+    };
+    // console.log('appointments:', appointments);
+
+    // update appointments with appointment with interview set to null
+    axios
+      .delete(`http://localhost:8001/api/appointments/${id}`)
+      .then(setState({ ...state, appointments }))
+      .catch(err => console.error(err));    
+  };
+
+  const editInterview = (id, interview) => {
+    bookInterview(id, interview);
   };
 
   const schedules = appts.map((appointment) => {
@@ -46,11 +69,13 @@ export default function Application() {
         interview={interviewInfo}
         interviewers={interviewers}
         bookInterview={bookInterview}
+        onCancel={cancelInterview}
       />
     );
   }
   );
 
+  // getting day, appointments, interview data from /api/ and then setting state
   useEffect(() => {
     Promise
       .all([
