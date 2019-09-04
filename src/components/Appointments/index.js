@@ -21,10 +21,12 @@ export default function Appointment(props) {
   const ERROR_DELETE = 'ERROR_DELETE';
   const ERROR_SAVE = 'ERROR_SAVE';
 
+
+
   const { mode, transition, back } = useVisualMode(
     props.interview ? SHOW : EMPTY
   ); 
-
+    
   const save = (name, interviewer) => {
     const interview = {
       student: name,
@@ -47,7 +49,6 @@ export default function Appointment(props) {
 
      setTimeout(() => {
       if (props.onCancel(props.id)){
-
         transition(EMPTY);
       } else {
         transition(ERROR_DELETE, true);

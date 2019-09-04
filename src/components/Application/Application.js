@@ -50,7 +50,9 @@ export default function Application() {
     // update appointments with appointment with interview set to null
     axios
       .delete(`http://localhost:8001/api/appointments/${id}`)
-      .then(setState({ ...state, appointments }))
+      .then(() => {
+        setState({ ...state, appointments })
+      })
       .catch(err => {
         return err;
       });    
