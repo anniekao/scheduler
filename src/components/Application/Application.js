@@ -31,7 +31,9 @@ export default function Application() {
     axios
       .put(`http://localhost:8001/api/appointments/${id}`, appointment)
       .then(setState({...state, appointments}))
-      .catch(err => console.error(err));    
+      .catch(err => {
+        return err;
+      });    
   };
 
   const cancelInterview = (id) => {
@@ -39,23 +41,19 @@ export default function Application() {
       ...state.appointments[id],
       interview: null
     };
-    console.log('id: ', id);
-    console.log('appointment:', appointment);
+
     const appointments = {
       ...state.appointments, 
       [id]: appointment
     };
-    // console.log('appointments:', appointments);
 
     // update appointments with appointment with interview set to null
     axios
       .delete(`http://localhost:8001/api/appointments/${id}`)
       .then(setState({ ...state, appointments }))
-      .catch(err => console.error(err));    
-  };
-
-  const editInterview = (id, interview) => {
-    bookInterview(id, interview);
+      .catch(err => {
+        return err;
+      });    
   };
 
   const schedules = appts.map((appointment) => {
