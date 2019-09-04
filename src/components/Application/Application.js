@@ -17,6 +17,24 @@ export default function Application() {
   const setDay = day => setState({...state, day});
   const appts = getAppointmentsForDay(state, state.day);
   const interviewers = getInterviewersForDay(state, state.day);
+  const bookInterview = (id, interview) => {
+    const appointment = {
+      ...state.appointments[id],
+      interview: { ...interview }
+    };
+    const appointments = {
+      ...state.appointments,
+      [id]: appointment
+    };
+
+    console.log(appointments);
+    // update appointments with the new appointment
+    axios
+      .put(`http://localhost:8001/api/appointments/${id}`, appointment)
+      .then(setState({...state, appointments}))
+      .catch(err => console.error(err));    
+  };
+
   const schedules = appts.map((appointment) => {
     const interviewInfo = getInterview(state, appointment.interview);
 
@@ -27,6 +45,7 @@ export default function Application() {
         time={appointment.time}
         interview={interviewInfo}
         interviewers={interviewers}
+        bookInterview={bookInterview}
       />
     );
   }
