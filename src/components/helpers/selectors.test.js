@@ -1,4 +1,4 @@
-import { getAppointmentsForDay, getInterview, getInterviewersForDay } from "./selectors";
+import { getAppointmentsForDay, getInterview, getInterviewersForDay, setSpots } from "./selectors";
 
 const state = {
   days: [
@@ -128,3 +128,4 @@ test("getInterviewersForDay returns an empty array when the day is not found", (
   const result = getInterviewersForDay(state, "Wednesday");
   expect(result.length).toEqual(0);
 });
+
