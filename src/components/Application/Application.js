@@ -1,69 +1,30 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React from "react";
 
 import "./Application.scss";
 import DayList from "../DayList/DayList";
 import Appointment from "../Appointments/index";
 import { getAppointmentsForDay, getInterview, getInterviewersForDay } from "../helpers/selectors";
+import useApplicationData from "../../hooks/useApplicationData";
 
 export default function Application() {
-  const [state, setState] = useState({
-    day: "Monday",
-    days: [],
-    appointments: [],
-    interviewers: {}
-  });
-
-  const setDay = day => setState({...state, day});
-  const appts = getAppointmentsForDay(state, state.day);
+  const {
+    state,
+    setDay,
+    bookInterview,
+    cancelInterview
+  } = useApplicationData();
+  
   const interviewers = getInterviewersForDay(state, state.day);
-  const bookInterview = (id, interview) => {
-    const appointment = {
-      ...state.appointments[id],
-      interview: { ...interview }
-    };
-    const appointments = {
-      ...state.appointments,
-      [id]: appointment
-    };
-
-    // update appointments with the new appointment
-    axios
-      .put(`http://localhost:8001/api/appointments/${id}`, appointment)
-      .then(setState({...state, appointments}))
-      .catch(err => {
-        return err;
-      });    
-  };
-
-  const cancelInterview = (id) => {
-    const appointment = {
-      ...state.appointments[id],
-      interview: null
-    };
-
-    const appointments = {
-      ...state.appointments, 
-      [id]: appointment
-    };
-
-    // update appointments with appointment with interview set to null
-    axios
-      .delete(`http://localhost:8001/api/appointments/${id}`)
-      .then(() => {
-        setState({ ...state, appointments })
-      })
-      .catch(err => {
-        return err;
-      });    
-  };
-
-  const schedules = appts.map((appointment) => {
+  const appts = getAppointmentsForDay(state, state.day);
+  console.log('interviewers ', interviewers)
+  const schedules = appts.map(appointment => {
     const interviewInfo = getInterview(state, appointment.interview);
 
     return (
-      <Appointment 
-        key={appointment.id === appointment.length + 1 ? "last" : appointment.id} 
+      <Appointment
+        key={
+          appointment.id === appointment.length + 1 ? "last" : appointment.id
+        }
         id={appointment.id}
         time={appointment.time}
         interview={interviewInfo}
@@ -72,22 +33,7 @@ export default function Application() {
         onCancel={cancelInterview}
       />
     );
-  }
-  );
-
-  // getting day, appointments, interview data from /api/ and then setting state
-  useEffect(() => {
-    Promise
-      .all([
-        Promise.resolve(axios.get('/api/days')),
-        Promise.resolve(axios.get('/api/appointments')),
-        Promise.resolve(axios.get('/api/interviewers'))
-      ])
-      .then((all) => {
-        setState(prev => ({days: all[0].data, appointments: all[1].data, interviewers: all[2].data}));
-      })
-      .catch(err => console.error(err));
-  }, []);
+  });
 
   return (
     <main className="layout">
