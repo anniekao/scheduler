@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
-
 export default function useApplicationData() {
   const [state, setState] = useState({
     day: "Monday",
@@ -23,14 +22,12 @@ export default function useApplicationData() {
     };
 
     // update appointments with the new appointment
-    axios
+    return axios
       .put(`http://localhost:8001/api/appointments/${id}`, appointment)
       .then(() => {
         setState({...state, appointments});
       })
-      .catch(err => {
-        console.error(err);
-      });    
+      .catch(err => console.err(err));
   };
 
   const cancelInterview = (id) => {
@@ -45,14 +42,12 @@ export default function useApplicationData() {
     };
 
     // update appointments with appointment with interview set to null
-    axios
+    return axios
       .delete(`http://localhost:8001/api/appointments/${id}`)
       .then(() => {
         setState({ ...state, appointments });
       })
-      .catch(err => {
-        console.error(err);
-      });    
+      .catch(err => console.err(err));
   };
 
   // getting day, appointments, interview data from /api/ and then setting state

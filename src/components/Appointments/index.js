@@ -33,27 +33,27 @@ export default function Appointment(props) {
   
     transition(SAVING);
 
-    setTimeout(() => {
-      if (props.bookInterview(props.id, interview)) {
-         transition(SHOW);
-      } else {
+    props
+      .bookInterview(props.id, interview)
+      .then(() => transition(SHOW))
+      .catch(err => {
+        // console.error(err);
         transition(ERROR_SAVE, true);
-      }
-    }, 1500);
+      });
    };
 
    const cancel = () => {
     transition(DELETING, true);
 
-    setTimeout(() => {
-      if (props.onCancel(props.id)){
-        transition(EMPTY);
-      } else {
+    props
+      .onCancel(props.id)
+      .then(() => transition(EMPTY))
+      .catch(err => {
+        // console.err(err);
         transition(ERROR_DELETE, true);
-      }
-    }, 1500);
+      }); 
    };
-   console.log(props.interview);
+  
    return (
      <article className="appointment">
        <Header time={props.time} />

@@ -15,13 +15,22 @@ export default function useVisualMode(initial) {
   };
 
   const back = () => {
-    if (history.length > 0) {
+    if (history.length > 1) {
       setMode(history[history.length - 2]);
       setHistory((history.slice(0, -1)));
     } else {
       setMode(history[0]);
     }
   };
+  // function back() {
+  //  if (history.length > 1) {
+  //    const previousHistory = history.slice(0,-1);
+  //    setHistory(previousHistory);
+  //    setMode(previousHistory[previousHistory.length - 1]);
+  //  } else {
+  //    setMode(history[0]);
+  //  }
+  // }
 
   return {
     mode,
