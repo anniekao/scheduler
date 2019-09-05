@@ -27,7 +27,7 @@ export default function useApplicationData() {
       .then(() => {
         setState({...state, appointments});
       })
-      .catch(err => console.err(err));
+      .catch(err => console.err(err)); // FIXME: why is this working?
   };
 
   const cancelInterview = (id) => {
@@ -47,7 +47,7 @@ export default function useApplicationData() {
       .then(() => {
         setState({ ...state, appointments });
       })
-      .catch(err => console.err(err));
+      .catch(err => console.err(err)); // FIXME: why is this working?
   };
 
   // getting day, appointments, interview data from /api/ and then setting state
