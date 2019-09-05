@@ -9,6 +9,7 @@ export default function useApplicationData() {
   const SET_INTERVIEW = "SET_INTERVIEW";
 
   const [state, dispatch] = useReducer(reducer, {
+    day: "Monday",
     days: [],
     interviewers: [],
     appointments: []
@@ -18,10 +19,10 @@ export default function useApplicationData() {
 
     // if cancelling or booking an interview, update the number of spots for that day
     // returns a new days object
-    const setSpots = (days, day, action) => {
-      if (action === "dec") {
-        return days.map(item => {
-          if (item.name !== day) {
+    const setSpots = () => {
+      if (action.value.spots === "dec") {
+        return state.days.map(item => {
+          if (item.name !== state.day) {
             return item;
           }
           return {
@@ -30,8 +31,8 @@ export default function useApplicationData() {
           };
         });
       } else {
-        return days.map(item => {
-          if (item.name !== day) {
+        return state.days.map(item => {
+          if (item.name !== state.day) {
             return item;
           }
           return {
@@ -51,7 +52,7 @@ export default function useApplicationData() {
         const interviewers = action.value[2].data;
         return { ...state, days, appointments, interviewers };
       case SET_INTERVIEW:
-        const newDays = setSpots(state.days, state.day, action.value.spots)
+        const newDays = setSpots();
         return { ...state, appointments: action.value.appointments, days: newDays};
       default:
         throw new Error(
