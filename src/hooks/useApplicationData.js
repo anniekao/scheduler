@@ -53,7 +53,11 @@ export default function useApplicationData() {
         return { ...state, days, appointments, interviewers };
       case SET_INTERVIEW:
         const newDays = setSpots();
-        return { ...state, appointments: action.value.appointments, days: newDays};
+        const newAppointment = { ...state.appointments[action.value.appointment.id], interview: action.value.appointment.interview };
+        console.log('reducer newAppointment', newAppointment);
+        const newAppointments = { ...state.appointments, [action.value.appointment.id]: newAppointment };
+        console.log('reducer new appointments, ', newAppointments);
+        return { ...state, appointments: newAppointments, days: newDays};
       default:
         throw new Error(
           `Tried to reduce with unsupported action type: ${action.type}`
@@ -68,10 +72,12 @@ export default function useApplicationData() {
       ...state.appointments[id],
       interview: { ...interview }
     };
-    const appointments = {
-      ...state.appointments,
-      [id]: appointment
-    };
+    // const appointments = {
+    //   ...state.appointments,
+    //   [id]: appointment
+    // };
+
+    console.log('book interview data', appointment);
 
     // pass as value to dispatch to mark it as "DECREMENT value of spots"
     const spots = "dec";
@@ -79,7 +85,7 @@ export default function useApplicationData() {
     return axios
       .put(`http://localhost:8001/api/appointments/${id}`, appointment)
       .then(() => {
-        dispatch({ type: SET_INTERVIEW, value: { appointments, spots } });
+        dispatch({ type: SET_INTERVIEW, value: { appointment, spots } });
       })
       .catch(err => console.err(err)); // FIXME: why is this working?
   };
@@ -90,11 +96,12 @@ export default function useApplicationData() {
       interview: null
     };
 
-    const appointments = {
-      ...state.appointments,
-      [id]: appointment
-    };
+    // const appointments = {
+    //   ...state.appointments,
+    //   [id]: appointment
+    // };
 
+    console.log('cancel interview data: ', appointment);
       // pass as value to dispatch to mark it as "DECREMENT value of spots"
     const spots = "inc";
 
@@ -102,7 +109,7 @@ export default function useApplicationData() {
     return axios
       .delete(`http://localhost:8001/api/appointments/${id}`)
       .then(() => {
-        dispatch({ type: SET_INTERVIEW, value: { appointments, spots } });
+        dispatch({ type: SET_INTERVIEW, value: { appointment, spots } });
       })
       .catch(err => console.err(err)); // FIXME: why is this working?
   };
@@ -119,6 +126,38 @@ export default function useApplicationData() {
       })
       .catch(err => console.error(err));
   }, []);
+
+  // Websocket to communicate with the server
+  
+  useEffect(() => {
+    const webSocket = new WebSocket("ws://localhost:8001");
+    webSocket.onopen = () => {
+      webSocket.send('ping');
+    };
+
+    webSocket.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      const appointment = {id: data.id, interview: data.interview};
+
+      if(data.type === "SET_INTERVIEW" && data.interview === null ) {
+        // cancel interview, increment spots
+        const spots = "inc";
+        dispatch({ type: SET_INTERVIEW, value: { appointment, spots } });
+      } else if (data.type === "SET_INTERVIEW" &&  data.interview !== null) {
+        // book interview, decrement spots
+        const spots = "dec";
+        dispatch({ type: SET_INTERVIEW, value: { appointment, spots } });
+      }
+    };
+
+    webSocket.onerror = err => {
+      console.error(err);
+    };
+
+    return () => { webSocket.close(); }; 
+      
+    }, []);
+  
 
   return {
     state,
