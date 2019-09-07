@@ -11,6 +11,7 @@ import Confirm from './confirm';
 import Error from './error';
 
 export default function Appointment(props) {
+  // transition states
   const EMPTY = 'EMPTY';
   const SHOW = 'SHOW';
   const CREATE = 'CREATE';
