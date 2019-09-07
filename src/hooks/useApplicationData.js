@@ -2,68 +2,76 @@ import { useEffect, useReducer } from "react";
 import axios from "axios";
 // import { setSpots, getDayByAppointmentId } from "../components/helpers/selectors";
 
+ const SET_DAY = "SET_DAY";
+ const SET_APPLICATION_DATA = "SET_APPLICATION_DATA";
+ const SET_INTERVIEW = "SET_INTERVIEW";
+ const UPDATE_INTERVIEW = "UPDATE_INTERVIEW";
+ const UPDATE_SPOTS = "UPDATE_SPOTS";
+
+ function reducer(state, action) {
+   // if cancelling or booking an interview, update the number of spots for that day
+   // returns a new days object
+  
+   const setSpots = () => {
+     let count = 5;
+     for (let day in state.days) {
+       // FIXME: shorten state.days[day]
+       if (state.days[day].name === state.day){
+        for (let apptId of state.days[day].appointments) {
+        //  console.log(state.appointments[apptId]);
+         if(state.appointments[apptId].interview !== null) {
+          count--;
+         }
+        }
+       }
+     }
+     return state.days.map(item => {
+       if (item.name !== state.day) {
+         return item;
+       }
+       return {
+         ...item,
+         spots: count
+       };
+     });
+   };
+
+   switch (action.type) {
+     case SET_DAY:
+       return { ...state, day: action.value };
+     case SET_APPLICATION_DATA:
+       const days = action.value[0].data;
+       const appointments = action.value[1].data;
+       const interviewers = action.value[2].data;
+       return { ...state, days, appointments, interviewers };
+     case SET_INTERVIEW:
+       return { ...state, appointments: action.value, days: setSpots() };
+     case UPDATE_INTERVIEW:
+       const newAppointment = {
+         ...state.appointments[action.value.id],
+         interview: action.value.interview
+       };
+       const newAppointments = {
+         ...state.appointments,
+         [action.value.id]: newAppointment
+       };
+       return { ...state, appointments: newAppointments };
+     case UPDATE_SPOTS:
+       return { ...state, days: setSpots()};
+     default:
+       throw new Error(
+         `Tried to reduce with unsupported action type: ${action.type}`
+       );
+   }
+ }
 
 export default function useApplicationData() {
-  const SET_DAY = "SET_DAY";
-  const SET_APPLICATION_DATA = "SET_APPLICATION_DATA";
-  const SET_INTERVIEW = "SET_INTERVIEW";
-
-  const [state, dispatch] = useReducer(reducer, {
-    day: "Monday",
-    days: [],
-    interviewers: [],
-    appointments: []
-  });
-
-  function reducer(state, action) {
-
-    // if cancelling or booking an interview, update the number of spots for that day
-    // returns a new days object
-    const setSpots = () => {
-      if (action.value.spots === "dec") {
-        return state.days.map(item => {
-          if (item.name !== state.day) {
-            return item;
-          }
-          return {
-            ...item,
-            spots: item.spots - 1
-          };
-        });
-      } else {
-        return state.days.map(item => {
-          if (item.name !== state.day) {
-            return item;
-          }
-          return {
-            ...item,
-            spots: item.spots + 1
-          };
-        });
-      }
-    };
-
-    switch (action.type) {
-      case SET_DAY:
-        return { ...state, day: action.value };
-      case SET_APPLICATION_DATA:
-        const days = action.value[0].data;
-        const appointments = action.value[1].data;
-        const interviewers = action.value[2].data;
-        return { ...state, days, appointments, interviewers };
-      case SET_INTERVIEW:
-        const newDays = setSpots();
-        const newAppointment = { ...state.appointments[action.value.appointment.id], interview: action.value.appointment.interview };
-        console.log('reducer newAppointment', newAppointment);
-        const newAppointments = { ...state.appointments, [action.value.appointment.id]: newAppointment };
-        console.log('reducer new appointments, ', newAppointments);
-        return { ...state, appointments: newAppointments, days: newDays};
-      default:
-        throw new Error(
-          `Tried to reduce with unsupported action type: ${action.type}`
-        );
-    }
-  }
+   const [state, dispatch] = useReducer(reducer, {
+     day: "Monday",
+     days: [],
+     interviewers: [],
+     appointments: []
+   });
 
   const setDay = day => dispatch({ type: SET_DAY, value: day });
 
@@ -72,20 +80,17 @@ export default function useApplicationData() {
       ...state.appointments[id],
       interview: { ...interview }
     };
-    // const appointments = {
-    //   ...state.appointments,
-    //   [id]: appointment
-    // };
 
-    console.log('book interview data', appointment);
+     const appointments = {
+       ...state.appointments,
+       [id]: appointment
+     };
 
-    // pass as value to dispatch to mark it as "DECREMENT value of spots"
-    const spots = "dec";
     // update appointments with the new appointment
     return axios
       .put(`http://localhost:8001/api/appointments/${id}`, appointment)
       .then(() => {
-        dispatch({ type: SET_INTERVIEW, value: { appointment, spots } });
+        dispatch({ type: SET_INTERVIEW, value: appointments });
       })
       .catch(err => console.err(err)); // FIXME: why is this working?
   };
@@ -96,20 +101,16 @@ export default function useApplicationData() {
       interview: null
     };
 
-    // const appointments = {
-    //   ...state.appointments,
-    //   [id]: appointment
-    // };
-
-    console.log('cancel interview data: ', appointment);
-      // pass as value to dispatch to mark it as "DECREMENT value of spots"
-    const spots = "inc";
+    const appointments = {
+      ...state.appointments,
+      [id]: appointment
+    };
 
     // update appointments with appointment with interview set to null
     return axios
       .delete(`http://localhost:8001/api/appointments/${id}`)
       .then(() => {
-        dispatch({ type: SET_INTERVIEW, value: { appointment, spots } });
+        dispatch({ type: SET_INTERVIEW, value: appointments });
       })
       .catch(err => console.err(err)); // FIXME: why is this working?
   };
@@ -128,7 +129,6 @@ export default function useApplicationData() {
   }, []);
 
   // Websocket to communicate with the server
-  
   useEffect(() => {
     const webSocket = new WebSocket("ws://localhost:8001");
     webSocket.onopen = () => {
@@ -138,16 +138,15 @@ export default function useApplicationData() {
     webSocket.onmessage = (event) => {
       const data = JSON.parse(event.data);
       const appointment = {id: data.id, interview: data.interview};
-
+      
       if(data.type === "SET_INTERVIEW" && data.interview === null ) {
-        // cancel interview, increment spots
-        const spots = "inc";
-        dispatch({ type: SET_INTERVIEW, value: { appointment, spots } });
+        // update state with new appointment
+        dispatch({ type: UPDATE_INTERVIEW, value: appointment });
       } else if (data.type === "SET_INTERVIEW" &&  data.interview !== null) {
-        // book interview, decrement spots
-        const spots = "dec";
-        dispatch({ type: SET_INTERVIEW, value: { appointment, spots } });
+        // update state minus the appointment
+        dispatch({ type: UPDATE_INTERVIEW, value: appointment });
       }
+      dispatch({ type: UPDATE_SPOTS });
     };
 
     webSocket.onerror = err => {
@@ -155,8 +154,7 @@ export default function useApplicationData() {
     };
 
     return () => { webSocket.close(); }; 
-      
-    }, []);
+  }, []);
   
 
   return {
