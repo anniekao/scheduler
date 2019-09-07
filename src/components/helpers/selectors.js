@@ -22,12 +22,4 @@ export function getInterview(state, interview) {
   };
 }
 
-export function getDayByAppointmentId(state, id) {
-  // checks to see if the id exists in appointments
-  if (state.days.length === 0 || state.days.map(day => day.appointments).map(item => item.includes(id)).every(item => item === false) === true) return [];
-
-  // returns the day containing that appointment id
-  return state.days.filter(item => item.appointments.includes(id));
-}
-
 
