@@ -18,7 +18,6 @@ import axios from "axios";
        // FIXME: shorten state.days[day]
        if (state.days[day].name === state.day){
         for (let apptId of state.days[day].appointments) {
-        //  console.log(state.appointments[apptId]);
          if(state.appointments[apptId].interview !== null) {
           count--;
          }
@@ -149,8 +148,8 @@ export default function useApplicationData() {
       dispatch({ type: UPDATE_SPOTS });
     };
 
-    webSocket.onerror = err => {
-      console.error(err);
+    webSocket.onerror = function(event) {
+      console.error("WebSocket error observed:", event);
     };
 
     return () => { webSocket.close(); }; 

@@ -24,12 +24,12 @@ export default function Form(props) {
             className="appointment__create-input text--semi-bold"
             name="name"
             type="text"
-            placeholder= "Enter Student Name"
-            /*
-          This must be a controlled component
-        */
-            onChange={(event) => setName(event.target.value)}
+            placeholder="Enter Student Name"
             value={name}
+            onChange={event => {
+              setName(event.target.value);
+            }}
+            data-testid="student-name-input"
           />
         </form>
         <InterviewerList
@@ -43,7 +43,7 @@ export default function Form(props) {
           <Button danger onClick={cancel}>
             Cancel
           </Button>
-          <Button confirm onClick={ () => props.onSave(name, interviewer) }>
+          <Button confirm onClick={() => props.onSave(name, interviewer)}>
             Save
           </Button>
         </section>
