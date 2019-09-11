@@ -5,10 +5,6 @@ This single-page React application allows users to book, cancel, and delete one-
 - Front/Back end: React, Webpack, Axios, Websocket, Express
 - Testing: Jest, Storybook, Cypress
 
-![Creating an appointment](https://github.com/anniekao/scheduler/blob/master/public/feature-gifs/feature-create.gif)
-
-![Error handling](https://github.com/anniekao/scheduler/blob/master/public/feature-gifs/feature-error.gif)
-
 ## Setup Instructions
 
 **Note**: In order to run the scheduler locally, the [scheduler-api](https://github.com/anniekao/scheduler-api) must also be downloaded. Instructions for setup can be found in the corresponding README file.
@@ -18,4 +14,12 @@ This single-page React application allows users to book, cancel, and delete one-
 3. Run Jest test with `npm test`
 4. Run Storybook with `npm run storybook`
 5. Run Cypress with `npm run cypress`
+
+## Screenshots
+
+![Creating an appointment](https://github.com/anniekao/scheduler/blob/master/public/feature-gifs/feature-create.gif)
+
+![Error handling](https://github.com/anniekao/scheduler/blob/master/public/feature-gifs/feature-error.gif)
+
+
 
