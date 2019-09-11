@@ -18,7 +18,8 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "storybook": "start-storybook -p 9009 -s public --ci",
-    "build-storybook": "build-storybook -s public"
+    "build-storybook": "build-storybook -s public",
+    "cypress": "cypress open -P ."
   },
   "proxy": "http://localhost:8001",
   "browserslist": {
@@ -44,6 +45,7 @@
     "@testing-library/jest-dom": "^4.0.0",
     "@testing-library/react": "^8.0.9",
     "babel-loader": "^8.0.5",
+    "cypress": "^3.4.1",
     "install": "^0.13.0",
     "jest-dom": "^4.0.0",
     "node-sass": "^4.11.0",
@@ -53,6 +55,10 @@
   "jest": {
     "watchPathIgnorePatterns": [
       "<rootDir>/node_modules/"
+    ],
+    "collectCoverageFrom": [
+      "src/**/*.js",
+      "!src/index.js"
     ]
   }
 }
