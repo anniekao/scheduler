@@ -7,7 +7,7 @@ This single-page React application allows users to book, cancel, and delete one-
 
 ## Setup Instructions
 
-**Note**: In order to run the scheduler locally, the [scheduler-api](https://github.com/anniekao/scheduler-api) must also be downloaded. Instructions for setup can be found in the corresponding README file.
+**Note**: In order to run the scheduler locally, the [scheduler-api](https://github.com/anniekao/scheduler-api) must also be downloaded and run concurrently. Instructions for setup can be found in the corresponding README file.
 
 1. Install dependencies with `npm install`.
 2. Run the Webpack Development Server with `npm start`
