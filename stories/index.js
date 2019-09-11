@@ -14,14 +14,14 @@ import InterviewerListItem from "components/InterviewerListItem/InterviewerListI
 import InterviewerList from "components/InterviewerList/InterviewerList";
 
 import Appointments from "components/Appointments/index";
-import Header from "components/Appointments/header";
-import Empty from "components/Appointments/empty";
-import Show from "components/Appointments/show";
-import Confirm from "components/Appointments/confirm";
-import Status from "components/Appointments/status";
+import Header from "components/Appointments/Header";
+import Empty from "components/Appointments/Empty";
+import Show from "components/Appointments/Show";
+import Confirm from "components/Appointments/Confirm";
+import Status from "components/Appointments/Status";
 import ErrorSaving from "components/Appointments/error-saving";
 import ErrorDeleting from "components/Appointments/error-deleting";
-import Form from "components/Appointments/form";
+import Form from "components/Appointments/Form";
 
 
 storiesOf("Button", module)

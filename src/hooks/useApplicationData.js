@@ -72,7 +72,7 @@ export default function useApplicationData() {
       .catch(err => console.error(err));
   }, []);
 
-  // Websocket to communicate with the server
+  // Websocket to communicate with the server and update appointments when change occurs
   useEffect(() => {
     const webSocket = new WebSocket("ws://localhost:8001");
     webSocket.onopen = () => {

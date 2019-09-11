@@ -1,16 +1,18 @@
 import React, { useEffect } from 'react';
 
 import './styles.scss';
-import Header from './header';
-import Show from './show';
-import Empty from './empty';
+import Header from './Header';
+import Show from './Show';
+import Empty from './Empty';
 import useVisualMode from '../../hooks/useVisualMode';
-import Form from './form';
-import Status from './status';
-import Confirm from './confirm';
-import Error from './error';
+import Form from './Form';
+import Status from './Status';
+import Confirm from './Confirm';
+import Error from './Error';
 
 export default function Appointment(props) {
+  const { interview, id, interviewers, time } = props;
+
   // transition states
   const EMPTY = 'EMPTY';
   const SHOW = 'SHOW';
@@ -23,7 +25,7 @@ export default function Appointment(props) {
   const ERROR_SAVE = 'ERROR_SAVE';
 
   const { mode, transition, back } = useVisualMode(
-    props.interview ? SHOW : EMPTY
+    interview ? SHOW : EMPTY
   ); 
     
   const save = (name, interviewer) => {
@@ -35,7 +37,7 @@ export default function Appointment(props) {
       transition(SAVING);
 
       props
-        .bookInterview(props.id, interview)
+        .bookInterview(id, interview)
         .then(() => transition(SHOW))
         .catch(err => {
           // console.error(err);
@@ -52,37 +54,38 @@ export default function Appointment(props) {
       .onCancel(props.id)
       .then(() => transition(EMPTY))
       .catch(err => {
-        // console.err(err);
+        // console.error(err);
         transition(ERROR_DELETE, true);
       }); 
    };
 
+   // ensures that an interview is shown only when an interview is booked
    useEffect(() => {
-     if (props.interview && mode === EMPTY) {
+     if (interview && mode === EMPTY) {
        transition(SHOW);
      }
-     if (props.interview === null && mode === SHOW) {
+     if (interview === null && mode === SHOW) {
        transition(EMPTY);
      }
-   }, [props.interview, transition, mode]);
+   }, [interview, transition, mode]);
   
    return (
      <article data-testid="appointment" className="appointment">
-       <Header time={props.time} />
+       <Header time={ time } />
 
        {mode === EMPTY && <Empty onAdd={() => transition(CREATE)} />}
-       {mode === SHOW && props.interview && (
+       {mode === SHOW && interview && (
          <Show
-           student={props.interview.student}
-           interviewer={props.interview.interviewer.name}
+           student={ interview.student }
+           interviewer={ interview.interviewer.name }
            onCancel={() => transition(CONFIRM)}
            onEdit={() => transition(EDIT)}
          />
        )}
        {mode === CREATE && (
          <Form
-           interviewers={props.interviewers}
-           onSave={save}
+           interviewers={ interviewers }
+           onSave={ save }
            onCancel={() => transition(EMPTY)}
          />
        )}
@@ -92,17 +95,17 @@ export default function Appointment(props) {
          <Confirm
            message="Delete the appointment?"
            onCancel={() => back()}
-           onConfirm={cancel}
+           onConfirm={ cancel }
          />
        )}
 
        {mode === DELETING && <Status message="Deleting" />}
        {mode === EDIT && (
          <Form
-           interviewers={props.interviewers}
-           name={props.interview.student}
-           interviewer={props.interview.interviewer.id}
-           onSave={save}
+           interviewers={ props.interviewers }
+           name={ props.interview.student }
+           interviewer={ props.interview.interviewer.id }
+           onSave={ save }
            onCancel={() => transition(SHOW)}
          />
        )}
