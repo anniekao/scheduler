@@ -18,8 +18,7 @@ This single-page React application allows users to book, cancel, and delete one-
 ## Screenshots
 
 ![Creating an appointment](https://github.com/anniekao/scheduler/blob/master/public/feature-gifs/feature-create.gif)
+Creating an appointment
 
 ![Error handling](https://github.com/anniekao/scheduler/blob/master/public/feature-gifs/feature-error.gif)
-
-
-
+If there are errors when creating/deleting/editing an appointment then a pop up appears
