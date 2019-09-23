@@ -17,13 +17,13 @@ export default function Application() {
   const interviewers = getInterviewersForDay(state, state.day);
   const appts = getAppointmentsForDay(state, state.day);
 
-  const schedules = appts.map(appointment => {
+  let schedules = appts.map(appointment => {
     const interviewInfo = getInterview(state, appointment.interview);
 
     return (
       <Appointment
         key={
-          appointment.id === appointment.length + 1 ? "last" : appointment.id
+          appointment.id === appointment.id
         }
         id={appointment.id}
         time={appointment.time}
@@ -34,6 +34,8 @@ export default function Application() {
       />
     );
   });
+
+  schedules = [...schedules, <Appointment key="last" time="5pm" />];
 
   return (
     <main className="layout">
