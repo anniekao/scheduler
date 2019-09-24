@@ -6,7 +6,7 @@ import Appointment from "../Appointments/index";
 import { getAppointmentsForDay, getInterview, getInterviewersForDay } from "../helpers/selectors";
 import useApplicationData from "../../hooks/useApplicationData";
 
-export default function Application() {
+const Application = () => {
   const {
     state,
     setDay,
@@ -62,3 +62,5 @@ export default function Application() {
     </main>
   );
 }
+
+export default Application;
