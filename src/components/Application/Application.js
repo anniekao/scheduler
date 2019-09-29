@@ -23,7 +23,7 @@ const Application = () => {
     return (
       <Appointment
         key={
-          appointment.id === appointment.id
+          appointment.id 
         }
         id={appointment.id}
         time={appointment.time}

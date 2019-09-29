@@ -11,7 +11,6 @@ export default function reducer(state, action) {
   const setSpots = () => {
     let count = 5;
     for (let day in state.days) {
-      // FIXME: shorten state.days[day]
       if (state.days[day].name === state.day) {
         for (let apptId of state.days[day].appointments) {
           if (state.appointments[apptId].interview !== null) {

@@ -36,7 +36,10 @@ export default function useApplicationData() {
       .then(() => {
         dispatch({ type: SET_INTERVIEW, value: appointments });
       })
-      .catch(err => console.err(err)); // FIXME: why is this working?
+      .then(() => {
+        dispatch({ type: UPDATE_SPOTS });
+      })
+      .catch(err => err); 
   };
 
   const cancelInterview = id => {
@@ -56,7 +59,10 @@ export default function useApplicationData() {
       .then(() => {
         dispatch({ type: SET_INTERVIEW, value: appointments });
       })
-      .catch(err => console.err(err)); // FIXME: why is this working?
+      .then(() => {
+        dispatch({ type: UPDATE_SPOTS });
+      })
+      .catch(err => err);
   };
 
   // getting day, appointments, interview data from /api/ and then setting state
@@ -73,32 +79,32 @@ export default function useApplicationData() {
   }, []);
 
   // Websocket to communicate with the server and update appointments when change occurs
-  useEffect(() => {
-    const webSocket = new WebSocket("ws://localhost:8001");
-    webSocket.onopen = () => {
-      webSocket.send('ping');
-    };
+  // useEffect(() => {
+  //   const webSocket = new WebSocket("ws://localhost:8001");
+  //   webSocket.onopen = () => {
+  //     webSocket.send('ping');
+  //   };
 
-    webSocket.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      const appointment = {id: data.id, interview: data.interview};
+  //   webSocket.onmessage = (event) => {
+  //     const data = JSON.parse(event.data);
+  //     const appointment = {id: data.id, interview: data.interview};
       
-      if(data.type === "SET_INTERVIEW" && data.interview === null ) {
-        // update state with new appointment
-        dispatch({ type: UPDATE_INTERVIEW, value: appointment });
-      } else if (data.type === "SET_INTERVIEW" &&  data.interview !== null) {
-        // update state minus the appointment
-        dispatch({ type: UPDATE_INTERVIEW, value: appointment });
-      }
-      dispatch({ type: UPDATE_SPOTS });
-    };
+  //     if(data.type === "SET_INTERVIEW" && data.interview === null ) {
+  //       // update state with new appointment
+  //       dispatch({ type: UPDATE_INTERVIEW, value: appointment });
+  //     } else if (data.type === "SET_INTERVIEW" &&  data.interview !== null) {
+  //       // update state minus the appointment
+  //       dispatch({ type: UPDATE_INTERVIEW, value: appointment });
+  //     }
+  //     dispatch({ type: UPDATE_SPOTS });
+  //   };
 
-    webSocket.onerror = function(event) {
-      console.error("WebSocket error observed:", event);
-    };
+  //   webSocket.onerror = function(event) {
+  //     console.error("WebSocket error observed:", event);
+  //   };
 
-    return () => { webSocket.close(); }; 
-  }, []);
+  //   return () => { webSocket.close(); }; 
+  // }, []);
   
 
   return {

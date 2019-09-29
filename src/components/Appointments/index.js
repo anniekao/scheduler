@@ -28,31 +28,32 @@ export default function Appointment(props) {
     interview ? SHOW : EMPTY
   ); 
     
-  const save = (name, interviewer) => {
+  const save = async (name, interviewer) => {
     const interview = {
       student: name,
       interviewer
     };
-    if (interview.student && interview.interviewer) {
-      transition(SAVING);
+    transition(SAVING, true);
 
-      props
-        .bookInterview(id, interview)
-        .then(() => transition(SHOW));
+    const saved = await props.bookInterview(id, interview);
+
+    if (saved === undefined) {
+      transition(SHOW);
     } else {
-      transition(ERROR_SAVE, true);    
+      transition(ERROR_SAVE, true);
     }
    };
 
-   const cancel = () => {
+   const cancel = async () => {
     transition(DELETING, true);
 
-    props
-      .onCancel(props.id)
-      .then(() => transition(EMPTY))
-      .catch(err => {
-        transition(ERROR_DELETE, true);
-      }); 
+    const cancelled = await props.onCancel(props.id);
+
+    if (cancelled === undefined) {
+      transition(EMPTY);
+    } else {
+      transition(ERROR_DELETE, true);
+    }
    };
 
    // ensures that an interview is shown only when an interview is booked
